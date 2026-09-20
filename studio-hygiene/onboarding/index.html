@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NDL OS — Construis ton identité</title>
+  <meta name="description" content="Configure l'univers de ton studio NDL OS." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='17' fill='%23111012'/%3E%3Cpath d='M17 45V19h5l20 18V19h5v26h-5L22 27v18z' fill='%23ffb6ce'/%3E%3C/svg%3E" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap');
+    :root { --ink:#111012; --paper:#f7f6f4; --muted:#8a8588; --line:#e8e4e5; --pink:#ffb6ce; --pink2:#ef8db4; --accent:#ef8db4; --deep:#171417; --card:#211d20; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font-family:'DM Sans',Arial,sans-serif; }
+    button,input { font:inherit; }
+    button { cursor:pointer; }
+    .shell { min-height:100vh; display:grid; grid-template-columns:330px minmax(0,1fr); }
+    .aside { background:#111012; color:#fff; padding:36px 28px; display:flex; flex-direction:column; min-height:100vh; }
+    .brand { font-family:'Playfair Display',serif; font-size:31px; letter-spacing:-1.7px; }
+    .brand sup { color:var(--pink); font-family:'DM Sans'; font-size:10px; letter-spacing:0; vertical-align:top; }
+    .aside p { color:#a5a0a3; font-size:13px; line-height:1.55; margin:8px 0 38px; max-width:210px; }
+    .step-list { display:grid; gap:7px; }
+    .step { display:flex; gap:12px; align-items:center; width:100%; padding:11px 10px; border:0; border-radius:13px; color:#a7a1a4; background:transparent; text-align:left; }
+    .step:hover,.step.active { background:#292428; color:#fff; }
+    .n { width:24px; height:24px; display:grid; place-items:center; border:1px solid #615a5e; border-radius:50%; font-size:11px; }
+    .step.active .n,.step.done .n { background:var(--pink); border-color:var(--pink); color:#1c1518; font-weight:700; }
+    .step b { font-size:14px; font-weight:500; }
+    .aside-foot { margin-top:auto; color:#837d80; font-size:11px; line-height:1.5; }
+    .workspace { padding:34px clamp(25px,5vw,84px); display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 74% 10%,#ffe7ef 0,transparent 28%),var(--paper); }
+    .panel { width:min(850px,100%); }
+    .topline { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; color:#625d60; font-size:13px; }
+    .progress { display:flex; gap:6px; }
+    .progress i { display:block; width:28px; height:3px; border-radius:99px; background:#ddd8da; }
+    .progress i.on { background:var(--accent); }
+    .page { display:none; animation:up .3s ease; }
+    .page.active { display:block; }
+    @keyframes up { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+    h1 { margin:0; font-family:'Playfair Display',serif; font-size:clamp(38px,5vw,64px); font-weight:500; line-height:.98; letter-spacing:-3px; }
+    h1 em { font-style:italic; }
+    .lead { margin:15px 0 28px; color:#696367; font-size:16px; line-height:1.45; max-width:560px; }
+    .choice-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
+    .choice { position:relative; min-height:128px; padding:19px; border:1px solid var(--line); border-radius:18px; background:#fff; text-align:left; overflow:hidden; transition:.2s; }
+    .choice:hover { transform:translateY(-2px); border-color:#d5c5cb; }
+    .choice.active { border:2px solid var(--accent); padding:18px; box-shadow:0 9px 25px #ed91b125; }
+    .choice h3 { margin:0 0 6px; font-size:16px; }
+    .choice p { margin:0; color:#716b6e; font-size:13px; line-height:1.35; max-width:80%; }
+    .radio { position:absolute; right:15px; top:15px; width:18px; height:18px; border:1px solid #cac4c7; border-radius:50%; }
+    .active .radio { border:5px solid var(--accent); }
+    .visual { position:absolute; right:0; bottom:0; width:42%; height:70%; border-radius:18px 0 0 0; opacity:.9; }
+    .v1 { background:linear-gradient(145deg,#2c2026,#d9a6b8); } .v2 { background:linear-gradient(145deg,#f8dddf,#8d544d); } .v3 { background:linear-gradient(145deg,#111,#a88972); } .v4 { background:linear-gradient(145deg,#f2f0ed,#b4b0aa); }
+    .form { display:grid; gap:14px; max-width:620px; }
+    .field { padding:15px 16px; border:1px solid var(--line); border-radius:14px; background:#fff; }
+    .field label { display:block; color:#817b7e; font-size:11px; letter-spacing:.08em; text-transform:uppercase; margin-bottom:8px; }
+    .field input { border:0; outline:0; width:100%; font-size:17px; background:transparent; }
+    .logo-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; }
+    .logo-card { min-height:115px; padding:13px; border:1px solid var(--line); background:#fff; border-radius:15px; text-align:left; position:relative; }
+    .logo-card.active { border:2px solid var(--accent); padding:12px; }
+    .wordmark { font-family:'Playfair Display'; font-size:24px; line-height:1; margin-top:19px; }
+    .wordmark.mono { font-family:'DM Sans'; font-weight:700; letter-spacing:-1.5px; font-size:31px; }
+    .wordmark.hand { font-style:italic; transform:rotate(-4deg); }
+    .logo-card small { color:#827c7f; font-size:11px; }
+    .swatches { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; max-width:620px; }
+    .swatch { min-height:120px; border:1px solid var(--line); border-radius:15px; background:#fff; padding:10px; display:flex; flex-direction:column; justify-content:flex-end; text-align:left; position:relative; overflow:hidden; }
+    .swatch.active { border:2px solid var(--accent); padding:9px; }
+    .swatch i { position:absolute; top:0; left:0; right:0; height:66px; background:var(--sample); }
+    .swatch b { font-size:13px; } .swatch small { color:#777; margin-top:3px; }
+    .domain-row { display:flex; gap:10px; align-items:stretch; }
+    .domain-box { flex:1; padding:17px; border:1px solid var(--line); border-radius:14px; background:#fff; display:flex; gap:6px; align-items:center; }
+    .domain-box input { width:100%; border:0; outline:0; font-size:17px; min-width:0; }
+    .domain-box span { color:#817a7e; font-size:15px; white-space:nowrap; }
+    .or { display:flex; align-items:center; gap:12px; color:#898285; font-size:13px; max-width:620px; margin:8px 0; } .or:before,.or:after { content:''; height:1px; background:var(--line); flex:1; }
+    .soft { padding:15px 17px; border:1px solid var(--line); border-radius:14px; background:#fff; text-align:left; color:#2f2a2d; }
+    .soft span { display:block; color:#7f787b; font-size:13px; margin-top:3px; }
+    .loyalty-layout { display:grid; grid-template-columns:minmax(0,1.12fr) minmax(240px,.88fr); gap:20px; align-items:start; }
+    .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .card-option { aspect-ratio:1.58; border:0; border-radius:16px; padding:0; overflow:hidden; text-align:left; background:#262126; color:#fff; position:relative; }
+    .card-option.active { outline:3px solid var(--accent); outline-offset:2px; }
+    .card-art { position:absolute; inset:0; padding:13px; background:var(--card-bg); }
+    .card-art:after { content:''; position:absolute; width:125px; height:125px; border-radius:50%; background:var(--orb); right:-42px; top:-58px; opacity:.78; }
+    .card-art .mini { position:relative; z-index:1; font-family:'Playfair Display'; font-size:19px; line-height:.9; }
+    .card-art .tiny { position:absolute; bottom:13px; left:13px; right:13px; z-index:1; display:flex; justify-content:space-between; font-size:8px; letter-spacing:.05em; }
+    .live-card { min-height:260px; border-radius:23px; background:var(--live-bg); color:#fff; padding:23px; position:relative; overflow:hidden; box-shadow:0 20px 45px #20151922; }
+    .live-card:after { content:''; position:absolute; width:250px; height:250px; border-radius:50%; background:var(--live-orb); opacity:.72; right:-100px; top:-115px; }
+    .live-top,.live-title,.stamps,.live-note { position:relative; z-index:1; }
+    .live-top { display:flex; justify-content:space-between; font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
+    .live-title { font-family:'Playfair Display'; font-size:40px; line-height:.86; margin:36px 0 33px; }
+    .stamps { display:flex; gap:8px; } .stamps i { width:25px; height:25px; border:1px solid #ffffffa0; border-radius:50%; } .stamps i.fill { background:var(--accent); border-color:var(--accent); }
+    .live-note { position:absolute; bottom:19px; font-size:11px; }
+    .benefits { margin-top:14px; padding:15px; border-radius:15px; border:1px solid var(--line); background:#fff; }
+    .benefits label { color:#817b7e; text-transform:uppercase; font-size:10px; letter-spacing:.08em; } .benefit-chips { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+    .chip { border:0; padding:8px 10px; border-radius:100px; background:#f5edf0; font-size:12px; }
+    .chip.active { background:#ffe0e9; color:#a62c5b; }
+    .lock-note { color:#767073; font-size:12px; line-height:1.4; margin-top:12px; }
+    .end { max-width:620px; padding:31px; background:#171417; color:white; border-radius:22px; } .end h2 { margin:0; font-family:'Playfair Display'; font-size:42px; font-weight:500; letter-spacing:-2px; line-height:.95; } .end p { color:#bfb7bc; line-height:1.5; }
+    .summary { display:grid; grid-template-columns:repeat(2,1fr); gap:9px; margin:24px 0; } .summary div { padding:12px; background:#292428; border-radius:12px; } .summary small { display:block; color:#a6a0a4; font-size:10px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; } .summary b { font-size:14px; font-weight:500; }
+    .actions { display:flex; gap:10px; align-items:center; margin-top:28px; } .primary { border:0; border-radius:100px; padding:15px 22px; background:var(--accent); color:#24161c; font-size:14px; font-weight:700; } .secondary { border:0; background:transparent; padding:12px 0; color:#686164; font-size:14px; }
+    .toast { position:fixed; right:24px; bottom:24px; transform:translateY(120px); transition:.25s; padding:13px 16px; border-radius:12px; background:#171417; color:#fff; font-size:13px; box-shadow:0 8px 30px #0003; } .toast.show { transform:none; }
+    @media (max-width:760px) { .shell { display:block; } .aside { min-height:auto; padding:20px 20px 12px; } .aside p,.aside-foot { display:none; } .brand { font-size:25px; } .step-list { display:flex; overflow:auto; margin-top:18px; gap:5px; } .step { width:auto; padding:8px 10px; flex:none; } .step b { display:none; } .n { width:23px; height:23px; } .workspace { padding:25px 18px 38px; display:block; min-height:calc(100vh - 126px); } .topline { margin-bottom:22px; } h1 { font-size:45px; } .lead { font-size:15px; } .choice-grid,.loyalty-layout { grid-template-columns:1fr; } .swatches { grid-template-columns:repeat(2,1fr); } .logo-cards { grid-template-columns:repeat(3,1fr); } .domain-row { display:block; } .domain-row .primary { width:100%; margin-top:10px; } .live-card { min-height:230px; } .actions { position:sticky; bottom:0; padding-top:17px; background:linear-gradient(transparent,var(--paper) 35%); } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <aside class="aside">
+      <div class="brand">NDL OS<sup>+</sup></div>
+      <p>On construit un espace qui respecte ton univers — sans te demander de devenir graphiste.</p>
+      <nav class="step-list" aria-label="Étapes de création">
+        <button class="step active" data-go="0"><span class="n">1</span><b>Ton univers</b></button>
+        <button class="step" data-go="1"><span class="n">2</span><b>Ton identité</b></button>
+        <button class="step" data-go="2"><span class="n">3</span><b>Ton domaine</b></button>
+        <button class="step" data-go="3"><span class="n">4</span><b>Ta fidélité</b></button>
+        <button class="step" data-go="4"><span class="n">5</span><b>Ton espace</b></button>
+      </nav>
+      <div class="aside-foot">Tu peux revenir sur ces choix à tout moment dans Marque & clientes.</div>
+    </aside>
+    <section class="workspace"><div class="panel">
+      <div class="topline"><span id="count">Étape 1 sur 5</span><div class="progress" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div></div>
+      <section class="page active" data-page="0">
+        <h1>Crée ton <em>univers.</em></h1><p class="lead">Commence par la collection qui ressemble déjà à ton studio. Elle définit le cadre ; toi, tu définis l’identité.</p>
+        <div class="choice-grid" id="collections">
+          <button class="choice active" data-collection="Private Nail Club"><span class="radio"></span><h3>Private Nail Club</h3><p>Noir, rose poudré, attitude éditoriale.</p><span class="visual v1"></span></button>
+          <button class="choice" data-collection="Made for You"><span class="radio"></span><h3>Made for You</h3><p>Doux, lumineux, attention au détail.</p><span class="visual v2"></span></button>
+          <button class="choice" data-collection="Wear Your Art"><span class="radio"></span><h3>Wear Your Art</h3><p>Plus contrasté, plus affirmé.</p><span class="visual v3"></span></button>
+          <button class="choice" data-collection="Whole Attitude"><span class="radio"></span><h3>Whole Attitude</h3><p>Minimal, calme, studio soigné.</p><span class="visual v4"></span></button>
+        </div>
+        <div class="actions"><button class="primary next">Choisir cette collection →</button></div>
+      </section>
+      <section class="page" data-page="1">
+        <h1>Construis ton <em>identité.</em></h1><p class="lead">Le nom, le logo et les coloris restent cohérents avec la collection choisie. Rien n’est laissé au hasard.</p>
+        <div class="form"><div class="field"><label>Nom de ton studio</label><input id="studioName" value="L'atelier de Tania" /></div><div class="field"><label>Photo de profil</label><input value="Photo de ton espace / portrait" readonly aria-label="Photo de profil" /></div></div>
+        <p class="lead" style="margin:24px 0 10px;font-size:14px">Choisis une signature</p><div class="logo-cards" id="logos">
+          <button class="logo-card active" data-logo="Atelier"><small>Wordmark</small><div class="wordmark">L’atelier<br>de Tania</div></button>
+          <button class="logo-card" data-logo="Monogramme"><small>Monogramme</small><div class="wordmark mono">AT</div></button>
+          <button class="logo-card" data-logo="Signature"><small>Signature</small><div class="wordmark hand">Tania nail artist</div></button>
+        </div>
+        <p class="lead" style="margin:24px 0 10px;font-size:14px">Coloris de la collection</p><div class="swatches" id="swatches">
+          <button class="swatch active" data-color="Blush" data-accent="#ef8db4" data-bg="#211c21" data-orb="#bd557d" style="--sample:linear-gradient(120deg,#211c21 0 45%,#ef8db4 45% 70%,#f7d7e2 70%)"><i></i><b>Blush</b><small>Coloris initial</small></button>
+          <button class="swatch" data-color="Espresso" data-accent="#b18269" data-bg="#241a18" data-orb="#a06951" style="--sample:linear-gradient(120deg,#241a18 0 45%,#b18269 45% 70%,#e8d5c7 70%)"><i></i><b>Espresso</b><small>Plus chaud</small></button>
+          <button class="swatch" data-color="Cherry" data-accent="#c45368" data-bg="#260f17" data-orb="#8f273e" style="--sample:linear-gradient(120deg,#260f17 0 45%,#c45368 45% 70%,#f2d4d9 70%)"><i></i><b>Cherry</b><small>Plus marqué</small></button>
+          <button class="swatch" data-color="Noir & crème" data-accent="#292629" data-bg="#252224" data-orb="#bdb4ab" style="--sample:linear-gradient(120deg,#252224 0 45%,#bdb4ab 45% 70%,#f1ede8 70%)"><i></i><b>Noir & crème</b><small>Très minimal</small></button>
+        </div>
+        <div class="actions"><button class="secondary back">← Retour</button><button class="primary next">Valider mon identité →</button></div>
+      </section>
+      <section class="page" data-page="2">
+        <h1>Choisis ton <em>adresse.</em></h1><p class="lead">Ton mini-site et tes liens de réservation ont une vraie adresse. Tu peux commencer simplement et connecter ton domaine plus tard.</p>
+        <div class="domain-row"><div class="domain-box"><input id="domain" value="atelier-tania" aria-label="Sous-domaine" /><span>.ndl.app</span></div><button class="primary" id="checkDomain">Vérifier</button></div>
+        <div class="or">ou</div>
+        <button class="soft" id="customDomain"><b>Connecter mon propre domaine</b><span>ex. atelierdetania.fr — configuration guidée, sans quitter NDL OS.</span></button>
+        <div class="actions"><button class="secondary back">← Retour</button><button class="primary next">Continuer →</button></div>
+      </section>
+      <section class="page" data-page="3">
+        <h1>Ta carte de <em>fidélité.</em></h1><p class="lead">Tu choisis un modèle de la collection et son coloris. Les compositions graphiques restent protégées ; les avantages, eux, sont à toi.</p>
+        <div class="loyalty-layout"><div><div class="cards" id="loyaltyCards">
+          <button class="card-option active" data-card="Mes Nails Club" data-cardbg="#211c21" data-orb="#bd557d"><span class="card-art" style="--card-bg:#211c21;--orb:#bd557d"><span class="mini">MES<br>NAILS CLUB</span><span class="tiny"><span>L'ATELIER DE TANIA</span><span>07/09</span></span></span></button>
+          <button class="card-option" data-card="The Private Club" data-cardbg="#efe6df" data-orb="#b38168"><span class="card-art" style="--card-bg:#efe6df;--orb:#b38168;color:#211b1c"><span class="mini">THE<br>PRIVATE CLUB</span><span class="tiny"><span>L'ATELIER DE TANIA</span><span>07/09</span></span></span></button>
+          <button class="card-option" data-card="Nail Notes" data-cardbg="#30101b" data-orb="#c15268"><span class="card-art" style="--card-bg:#30101b;--orb:#c15268"><span class="mini">NAIL<br>NOTES</span><span class="tiny"><span>L'ATELIER DE TANIA</span><span>07/09</span></span></span></button>
+          <button class="card-option" data-card="Soft Club" data-cardbg="#d6c6b9" data-orb="#8e7f75"><span class="card-art" style="--card-bg:#d6c6b9;--orb:#8e7f75;color:#211b1c"><span class="mini">SOFT<br>CLUB</span><span class="tiny"><span>L'ATELIER DE TANIA</span><span>07/09</span></span></span></button>
+        </div><p class="lock-note">✦ Texte décoratif et composition vectorielle verrouillés pour préserver le template.</p></div>
+          <div><div class="live-card" id="liveCard"><div class="live-top"><span id="cardStudio">L'atelier de Tania</span><span>Fidélité</span></div><div class="live-title" id="cardTitle">MES<br>NAILS CLUB</div><div class="stamps"><i class="fill"></i><i class="fill"></i><i class="fill"></i><i class="fill"></i><i class="fill"></i><i></i><i></i><i></i><i></i></div><div class="live-note">Une pose après l’autre.</div></div><div class="benefits"><label>Avantage de la carte</label><div class="benefit-chips" id="benefits"><button class="chip active">-20 % sur la 9e pose</button><button class="chip">Nail art offert</button><button class="chip">Soin offert</button></div></div></div>
+        </div>
+        <div class="actions"><button class="secondary back">← Retour</button><button class="primary next">Valider ma carte →</button></div>
+      </section>
+      <section class="page" data-page="4">
+        <div class="end"><h2>Ton espace<br>est prêt.</h2><p>Tu as une base solide, cohérente et à ton image. Tu pourras revenir modifier ces choix depuis Marque & clientes.</p><div class="summary"><div><small>Collection</small><b id="outCollection">Private Nail Club</b></div><div><small>Signature</small><b id="outLogo">Atelier</b></div><div><small>Adresse</small><b id="outDomain">atelier-tania.ndl.app</b></div><div><small>Carte</small><b id="outCard">Mes Nails Club</b></div></div><button class="primary" id="finish">Entrer dans mon studio →</button></div>
+        <div class="actions"><button class="secondary back">← Modifier</button></div>
+      </section>
+    </div></section>
+  </main><div class="toast" id="toast" role="status"></div>
+  <script>
+    let step=0, state={collection:'Private Nail Club',logo:'Atelier',color:'Blush',accent:'#ef8db4',card:'Mes Nails Club',cardbg:'#211c21',orb:'#bd557d'};
+    const pages=[...document.querySelectorAll('.page')], steps=[...document.querySelectorAll('.step')], bars=[...document.querySelectorAll('.progress i')];
+    function show(n){step=Math.max(0,Math.min(4,n));pages.forEach((p,i)=>p.classList.toggle('active',i===step));steps.forEach((s,i)=>{s.classList.toggle('active',i===step);s.classList.toggle('done',i<step)});bars.forEach((b,i)=>b.classList.toggle('on',i<=step));document.getElementById('count').textContent=`Étape ${step+1} sur 5`;window.scrollTo({top:0,behavior:'smooth'});}
+    function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2400)}
+    document.querySelectorAll('.next').forEach(b=>b.onclick=()=>show(step+1));document.querySelectorAll('.back').forEach(b=>b.onclick=()=>show(step-1));steps.forEach(b=>b.onclick=()=>show(+b.dataset.go));
+    document.querySelectorAll('#collections .choice').forEach(b=>b.onclick=()=>{document.querySelectorAll('#collections .choice').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.collection=b.dataset.collection});
+    document.querySelectorAll('#logos .logo-card').forEach(b=>b.onclick=()=>{document.querySelectorAll('#logos .logo-card').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.logo=b.dataset.logo});
+    document.querySelectorAll('#swatches .swatch').forEach(b=>b.onclick=()=>{document.querySelectorAll('#swatches .swatch').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.color=b.dataset.color;state.accent=b.dataset.accent;document.documentElement.style.setProperty('--accent',state.accent);document.documentElement.style.setProperty('--pink',state.accent);});
+    document.querySelectorAll('#loyaltyCards .card-option').forEach(b=>b.onclick=()=>{document.querySelectorAll('#loyaltyCards .card-option').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.card=b.dataset.card;state.cardbg=b.dataset.cardbg;state.orb=b.dataset.orb;const c=document.getElementById('liveCard');c.style.setProperty('--live-bg',state.cardbg);c.style.setProperty('--live-orb',state.orb);document.getElementById('cardTitle').innerHTML=state.card.toUpperCase().replace(' ', '<br>');});
+    document.querySelectorAll('#benefits .chip').forEach(b=>b.onclick=()=>{document.querySelectorAll('#benefits .chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');});
+    document.getElementById('checkDomain').onclick=()=>toast(`✓ ${document.getElementById('domain').value}.ndl.app est disponible`);document.getElementById('customDomain').onclick=()=>toast('La connexion de ton domaine sera guidée au prochain écran.');
+    document.querySelector('[data-page="3"] .next').addEventListener('click',()=>{let name=document.getElementById('studioName').value||"L'atelier de Tania", domain=document.getElementById('domain').value||'atelier-tania';document.getElementById('cardStudio').textContent=name;document.getElementById('outCollection').textContent=state.collection;document.getElementById('outLogo').textContent=state.logo+' · '+state.color;document.getElementById('outDomain').textContent=domain+'.ndl.app';document.getElementById('outCard').textContent=state.card});
+    document.getElementById('finish').onclick=()=>{toast('Ton espace est créé — bienvenue dans NDL OS.');setTimeout(()=>location.href='/studio-hygiene/',800)};
+  </script>
+</body>
+</html>
