@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NDL OS — Créer ton site</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='17' fill='%23111012'/%3E%3Cpath d='M17 45V19h5l20 18V19h5v26h-5L22 27v18z' fill='%23ffb6ce'/%3E%3C/svg%3E">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap');
+
+:root{
+  --ink:#17151a;
+  --paper:#f6f5f7;
+  --muted:#847e88;
+  --line:#e9e6ea;
+  --pink:#e8408a;
+  --pink-deep:#d92f78;
+  --pink-soft:#fbeef4;
+  --green:#12ad0c;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'DM Sans',Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit}
+button{cursor:pointer;-webkit-appearance:none;appearance:none}
+.ico{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none;display:block}
+
+/* ---------- app shell ---------- */
+.app{width:min(100%,430px);margin:auto;min-height:100dvh;background:var(--paper);position:relative;overflow-x:hidden}
+.view{display:none}
+.view.active{display:flex;flex-direction:column;min-height:100dvh}
+
+/* ================= VIEW 1 — ONBOARDING ================= */
+.obTop{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 6px}
+.circleBtn{width:44px;height:44px;border-radius:50%;border:0;background:#fff;box-shadow:0 1px 0 #0000000d,0 6px 16px #00000010;display:grid;place-items:center;color:var(--ink)}
+.obBrand{font:600 22px/1 'Playfair Display',serif;letter-spacing:-.5px;display:flex;align-items:center;gap:6px}
+.obBrand .dot{width:6px;height:6px;border-radius:50%;background:var(--pink);display:inline-block;margin:0 -1px}
+.obBrand small{font:700 11px 'DM Sans';letter-spacing:.02em;color:var(--ink)}
+.helpBtn{display:flex;align-items:center;gap:8px;border:0;background:none;color:var(--ink);font-size:14px;font-weight:500}
+.helpBtn .circleBtn{width:34px;height:34px}
+
+.obBody{padding:18px 20px 130px;flex:1}
+.obBody h1{margin:14px 0 0;font:500 40px/1.04 'Playfair Display',serif;letter-spacing:-1px}
+.obBody h1 em{font-style:italic;position:relative;display:inline-block}
+.obBody h1 em .squiggle{position:absolute;left:2px;right:6px;bottom:-6px;height:8px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10'%3E%3Cpath d='M1 6 C 12 1,22 1,32 6 S 52 11,62 6 S 82 1,99 6' stroke='%23e8408a' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/100% 100%}
+.obLead{margin:14px 0 22px;color:var(--muted);font-size:16px}
+
+.obChoices{display:grid;gap:13px}
+.obCard{position:relative;display:flex;align-items:center;gap:14px;text-align:left;border-radius:22px;border:1.5px solid var(--line);background:#fff;padding:20px 18px;cursor:pointer}
+.obCard input{position:absolute;opacity:0;pointer-events:none}
+.obCard.selected{border-color:var(--pink);background:var(--pink-soft);box-shadow:0 10px 26px #e8408a1c}
+.obCard.disabled{opacity:.55;cursor:default}
+.obCardBody{flex:1;min-width:0}
+.obCard h2{margin:0 0 6px;font:500 25px/1.05 'Playfair Display',serif;letter-spacing:-.3px}
+.obCard p{margin:0;color:#4a4550;font-size:14.5px;line-height:1.35}
+.badge{position:absolute;left:18px;top:-13px;background:var(--pink);color:#fff;font:800 10.5px 'DM Sans';letter-spacing:.06em;padding:7px 13px;border-radius:99px;box-shadow:0 6px 14px #e8408a40}
+.soon{position:absolute;right:18px;top:-13px;background:#eceaec;color:#6a646c;font:700 10.5px 'DM Sans';padding:7px 12px;border-radius:99px}
+.radioDot{flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:2px solid #d6d1d5;display:grid;place-items:center}
+.obCard.selected .radioDot{border-color:var(--pink)}
+.obCard.selected .radioDot:after{content:'';width:12px;height:12px;border-radius:50%;background:var(--pink)}
+
+/* mini phone mockups inside the choice cards */
+.miniPhone{flex:0 0 auto;width:88px;height:150px;border:2.5px solid var(--ink);border-radius:18px;background:#fff;position:relative;overflow:hidden;padding:10px 8px 8px}
+.miniPhone:before{content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);width:26px;height:6px;border-radius:99px;background:var(--ink)}
+.miniPhone .mpBar{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.miniPhone .mpBrand{font:700 8px 'Playfair Display',serif}
+.miniPhone .mpMenu{width:9px;height:7px;display:flex;flex-direction:column;justify-content:space-between}
+.miniPhone .mpMenu i{display:block;height:1px;background:#bdb8bc}
+.mpHero{margin-top:10px;height:38px;border-radius:8px;background:linear-gradient(160deg,#f3dbe4,#eccdd9);display:grid;place-items:center}
+.mpHero svg{width:16px;height:16px;stroke:#c98fa6;stroke-width:1.6;fill:none}
+.mpLine{height:4px;border-radius:3px;background:#e3dfe2;margin-top:7px}
+.mpLine.w60{width:60%}
+.mpDots{display:flex;gap:5px;margin-top:8px}
+.mpDots i{width:9px;height:9px;border-radius:50%;background:#e9d6de}
+.mpCta{margin-top:8px;height:12px;border-radius:99px;background:var(--pink)}
+.mpPlus{margin-top:26px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:16px;font-weight:700}
+.mpSpark{margin-top:22px;text-align:center;font-size:20px;color:var(--pink);letter-spacing:6px}
+
+.formatBlock{margin-top:26px}
+.formatLabel{display:flex;align-items:center;gap:7px;font:500 21px 'Playfair Display',serif;margin-bottom:12px}
+.formatLabel .ico{width:17px;height:17px;color:#9b959e}
+.formatToggle{display:flex;background:#fff;border:1px solid var(--line);border-radius:99px;padding:5px;box-shadow:0 2px 8px #0000000a}
+.fmtBtn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:0;background:none;border-radius:99px;padding:13px 10px;font-size:15px;font-weight:600;color:var(--ink)}
+.fmtBtn .ico{width:17px;height:17px}
+.fmtBtn.active{background:var(--ink);color:#fff}
+
+.obCtaBar{position:sticky;bottom:0;padding:14px 20px calc(18px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--paper) 30%)}
+.obContinue{width:100%;border:0;border-radius:99px;background:var(--pink);color:#fff;padding:18px;font:800 14.5px 'DM Sans';letter-spacing:.05em;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 14px 26px #e8408a35}
+.obContinue .ico{width:18px;height:18px}
+
+/* ================= VIEW 2 — EDITOR ================= */
+.editorView{background:#eeecef}
+.edTop{margin:14px 8px 10px;background:#fff;border-radius:99px;display:flex;align-items:center;gap:2px;padding:5px;box-shadow:0 10px 26px #00000012}
+.edTop .circleBtn{width:34px;height:34px;flex:0 0 auto;box-shadow:none;background:#f2f1f3}
+.edSiteGroup{display:flex;align-items:center;gap:4px;padding:0 4px;white-space:nowrap;flex:0 1 auto;min-width:0}
+.edSiteName{border:0;background:none;display:flex;align-items:center;gap:2px;font:800 11.5px 'DM Sans';letter-spacing:.01em;padding:0;white-space:nowrap}
+.edSiteName .ico{width:12px;height:12px;flex:0 0 auto}
+.edDraftTag{color:var(--pink);font:800 9px 'DM Sans';letter-spacing:.02em;white-space:nowrap}
+.edSavedPill{display:flex;align-items:center;gap:4px;background:#f2f1f3;border-radius:99px;padding:6px 8px;font-size:10px;color:#4c474f;white-space:nowrap;flex:0 0 auto}
+.dotGreen{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;flex:0 0 auto}
+.eyeBtn{margin-left:auto}
+.edPublish{flex:0 0 auto;display:flex;align-items:center;gap:5px;border:0;border-radius:99px;background:linear-gradient(120deg,var(--pink),var(--pink-deep));color:#fff;padding:5px 11px 5px 5px;font:700 11.5px 'DM Sans';white-space:nowrap}
+.edPublish .pubIcon{width:22px;height:22px;border-radius:50%;background:#ffffff33;display:grid;place-items:center;flex:0 0 auto}
+.edPublish .ico{width:12px;height:12px}
+
+.edStage{padding:6px 20px 210px;display:flex;justify-content:center}
+.phoneFrame{width:250px;border:9px solid var(--ink);border-radius:40px;background:var(--ink);position:relative;box-shadow:0 20px 40px #00000020}
+.phoneFrame:before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:96px;height:24px;background:var(--ink);border-radius:0 0 16px 16px;z-index:3}
+.phoneScreen{background:#fbf8f6;border-radius:32px;overflow:hidden;max-height:66vh;overflow-y:auto;scrollbar-width:none}
+.phoneScreen::-webkit-scrollbar{display:none}
+.siteStatusBar{height:30px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px 4px;font:600 11px 'DM Sans'}
+.siteHeader{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 10px;border-bottom:1px solid #ece7e4}
+.siteHeader b{font:700 15px 'Playfair Display',serif;display:flex;align-items:center;gap:4px}
+.siteHeader b i{width:5px;height:5px;border-radius:50%;background:var(--pink);display:inline-block}
+.siteHeader small{font:700 7px 'DM Sans';letter-spacing:.1em;color:#8f8a8d;margin-left:5px}
+.siteHeader .ico{width:16px;height:16px}
+.siteScroll{padding-bottom:6px}
+.siteSection{position:relative;margin:10px;padding:14px;border-radius:14px;border:1.5px solid transparent}
+.siteSection.selected{border-color:var(--pink)}
+.secTag{position:absolute;left:8px;top:-9px;background:var(--pink);color:#fff;font:700 9px 'DM Sans';padding:4px 9px;border-radius:99px}
+.secMenu{position:absolute;right:8px;top:-9px;width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid #eee;font-size:11px;box-shadow:0 3px 8px #0000001a}
+.secHead{display:flex;align-items:center;justify-content:space-between;font:700 13px 'DM Sans';margin-bottom:8px;position:relative}
+.secHead .secMenu{position:static;box-shadow:none;border:0;background:none}
+.heroPh{height:56px;border-radius:9px;background:#efe6e0;display:grid;place-items:center;color:#c9beb4}
+.heroPh .ico{width:20px;height:20px}
+.siteSection h3{text-align:center;font:500 15px/1.15 'Playfair Display',serif;margin:9px 0 7px}
+.lineBar{height:4px;border-radius:3px;background:#e5dfda;margin:0 auto 5px;width:70%}
+.lineBar.short{width:45%}
+.heroBtnPh{display:block;margin:9px auto 0;border:0;border-radius:99px;background:var(--pink-soft);color:var(--pink-deep);font:700 10.5px 'DM Sans';padding:8px 14px}
+.addBetween{display:block;margin:-2px auto;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;border:3px solid #fbf8f6;font-size:14px;line-height:1;position:relative;z-index:2}
+.tileRow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.tileRow i{display:block;aspect-ratio:1;border-radius:8px;background:#efe6e0}
+
+.structureSheet{position:fixed;left:50%;bottom:64px;transform:translateX(-50%);width:min(100%,430px);max-height:50dvh;overflow-y:auto;background:#fff;border-radius:24px 24px 0 0;box-shadow:0 -10px 30px #00000014;padding:14px 16px calc(10px + env(safe-area-inset-bottom));z-index:10}
+.structureSheet .grab{width:36px;height:4px;border-radius:99px;background:#ddd9db;margin:0 auto 12px}
+.sheetHead{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.sheetHead h2{margin:0;font:800 19px 'DM Sans'}
+.sheetHead p{margin:3px 0 0;color:#9b959e;font-size:12.5px}
+.addSectionBtn{display:flex;align-items:center;gap:6px;border:0;border-radius:99px;background:var(--ink);color:#fff;padding:11px 15px;font:700 13px 'DM Sans'}
+.structList{display:grid;margin-top:6px}
+.structRow{display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:12px;border-left:4px solid transparent}
+.structRow.selected{background:var(--pink-soft);border-left-color:var(--pink)}
+.handle{color:#c9c4c8;letter-spacing:-2px;font-size:15px;width:14px;text-align:center}
+.rowThumb{width:38px;height:38px;border-radius:9px;background:#efe6e0;display:grid;place-items:center;color:#c9beb4}
+.rowThumb .ico{width:16px;height:16px}
+.rowThumb.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:8px 6px}
+.rowThumb.grid3 i{background:#c9beb4;border-radius:2px}
+.structRow b{flex:1;font:600 14.5px 'DM Sans'}
+.rowEye,.rowMore{border:0;background:none;color:var(--ink);width:24px;height:24px;display:grid;place-items:center}
+
+.bottomNav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,430px);display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid var(--line);padding:9px 4px calc(6px + env(safe-area-inset-bottom));z-index:11}
+.navItem{border:0;background:none;display:grid;justify-items:center;gap:4px;color:#9c969f;font-size:10.5px;font-weight:600;padding:4px 0}
+.navItem.active{color:var(--pink)}
+.navItem .ico{width:20px;height:20px}
+
+/* ================= ADD SECTION SHEET ================= */
+.scrim{position:fixed;inset:0;background:#00000055;opacity:0;pointer-events:none;transition:.2s;z-index:19}
+.scrim.show{opacity:1;pointer-events:auto}
+.addSectionSheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,100%);width:min(100%,430px);max-height:86dvh;background:#fff;border-radius:26px 26px 0 0;box-shadow:0 -14px 34px #00000022;padding:14px 18px calc(74px + env(safe-area-inset-bottom));z-index:20;transition:transform .28s cubic-bezier(.2,.7,.3,1);overflow-y:auto}
+.addSectionSheet.show{transform:translate(-50%,0)}
+.addSectionSheet .grab{width:36px;height:4px;border-radius:99px;background:#ddd9db;margin:0 auto 14px}
+.asHead{display:flex;align-items:flex-start;justify-content:space-between}
+.asEyebrow{color:var(--pink);font:800 10.5px 'DM Sans';letter-spacing:.1em}
+.asHead h2{margin:2px 0 0;font:600 26px 'Playfair Display',serif;letter-spacing:-.5px}
+.asClose{width:34px;height:34px;border-radius:50%;border:0;background:#f2f1f3;display:grid;place-items:center;font-size:14px}
+.asSearch{display:flex;align-items:center;gap:9px;background:#f2f1f3;border-radius:14px;padding:13px 14px;margin:16px 0 12px}
+.asSearch .ico{width:18px;height:18px;color:#8f8a8d}
+.asSearch input{border:0;background:none;outline:0;width:100%;font-size:14.5px;color:var(--ink)}
+.asCats{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+.asCats button{flex:0 0 auto;border:0;border-radius:99px;background:#f0eef0;color:var(--ink);padding:11px 16px;font:600 13.5px 'DM Sans'}
+.asCats button.active{background:var(--ink);color:#fff}
+.asGrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.asCard{position:relative;text-align:left;border:1.5px solid var(--line);border-radius:16px;background:#fff;padding:0;overflow:hidden}
+.asCard.selected{border-color:var(--pink)}
+.asThumb{position:relative;height:108px;overflow:hidden}
+.asPlus{position:absolute;right:7px;top:7px;width:26px;height:26px;border-radius:50%;background:var(--pink);color:#fff;display:grid;place-items:center;font-size:15px;line-height:1;box-shadow:0 4px 10px #e8408a45}
+.asCard b{display:block;padding:9px 10px 0;font:700 13.5px 'DM Sans'}
+.asCard span{display:block;padding:2px 10px 10px;color:#9b959e;font-size:11.5px}
+.asThumb.tHero{background:linear-gradient(100deg,#f6f1ee 54%,#caa08c 54%);display:flex;align-items:center}
+.asThumb.tHero .cap{padding:0 4px 0 10px;font:italic 500 11px/1.15 'Playfair Display',serif}
+.asThumb.tHero .cap b{display:block;font:italic 500 12px 'Playfair Display',serif;padding:0}
+.asThumb.tPrestations{background:#f3efe9;display:grid;place-items:center;font:italic 500 14px 'Playfair Display',serif}
+.asThumb.tPortfolio{background:linear-gradient(135deg,#3a2c28,#c8a394,#221a18)}
+.asThumb.tAvis{background:#fdf3f4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px}
+.asThumb.tAvis .stars{color:var(--pink);font-size:10px;letter-spacing:2px}
+.asThumb.tAvis small{font-size:9px;color:#8f8a8d;text-align:center}
+.asThumb.tApropos{background:#efe9e6;display:flex;align-items:center;justify-content:center;padding:10px}
+.asThumb.tApropos p{margin:0;font:500 11px/1.25 'DM Sans';text-align:center}
+.asThumb.tRegles{background:#fff;display:flex;gap:8px;align-items:center;justify-content:center}
+.asThumb.tRegles i{width:26px;height:26px;border-radius:50%;border:1.5px solid #f0c9d8;display:grid;place-items:center;font-size:11px}
+.asThumb.tFidelite{background:#1c1a1d;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.asThumb.tFidelite .stampRow{display:flex;gap:3px}
+.asThumb.tFidelite i{width:10px;height:10px;border-radius:50%;border:1px solid #fff6}
+.asThumb.tContact{background:linear-gradient(160deg,#221520,#3a2030);color:#fff;display:flex;align-items:center;justify-content:center}
+.asThumb.tContact b{font:500 12px 'Playfair Display',serif;font-style:italic}
+
+@media(max-width:400px){
+  .obBody h1{font-size:34px}
+  .obCard h2{font-size:22px}
+  .miniPhone{width:76px;height:132px}
+  .phoneFrame{width:220px}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ===== VIEW 1 : ONBOARDING ===== -->
+  <section class="view active" id="viewOnboarding">
+    <header class="obTop">
+      <button class="circleBtn" aria-label="Retour" onclick="history.back()">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M15 19 8 12l7-7"/></svg>
+      </button>
+      <div class="obBrand">NDL<span class="dot"></span><small>os</small></div>
+      <button class="helpBtn"><span class="circleBtn"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 4.7 1.2c0 1.6-2.2 1.8-2.2 3.3"/><path d="M12 17.2v.1"/></svg></span>Aide</button>
+    </header>
+
+    <main class="obBody">
+      <h1>Comment veux-tu <em>commencer<span class="squiggle"></span></em> ?</h1>
+      <p class="obLead">Crée ton site de réservation à ton image.</p>
+
+      <div class="obChoices" id="startChoices">
+        <label class="obCard selected" data-choice="template">
+          <input type="radio" name="start" checked>
+          <span class="badge">RECOMMANDÉ</span>
+          <div class="obCardBody">
+            <h2>Partir d’un template</h2>
+            <p>Choisis une base et personnalise chaque détail.</p>
+          </div>
+          <div class="miniPhone">
+            <div class="mpBar"><span class="mpBrand">NDL•</span><span class="mpMenu"><i></i><i></i><i></i></span></div>
+            <div class="mpHero"><svg viewBox="0 0 24 24"><path d="M4 18 9 9l4 6 3-4 4 7z"/><circle cx="9" cy="7" r="1.4"/></svg></div>
+            <div class="mpLine"></div><div class="mpLine w60"></div>
+            <div class="mpDots"><i></i><i></i><i></i></div>
+            <div class="mpCta"></div>
+          </div>
+          <span class="radioDot"></span>
+        </label>
+
+        <label class="obCard" data-choice="scratch">
+          <input type="radio" name="start">
+          <div class="obCardBody">
+            <h2>Créer de zéro</h2>
+            <p>Construis ton site section<br>par section.</p>
+          </div>
+          <div class="miniPhone">
+            <div class="mpBar"><span class="mpBrand">NDL•</span><span class="mpMenu"><i></i><i></i><i></i></span></div>
+            <div class="mpPlus" style="margin-left:auto;margin-right:auto">+</div>
+            <div class="mpLine" style="margin-top:22px"></div><div class="mpLine w60"></div>
+          </div>
+          <span class="radioDot"></span>
+        </label>
+
+        <label class="obCard disabled" data-choice="ai">
+          <input type="radio" name="start" disabled>
+          <span class="soon">Bientôt</span>
+          <div class="obCardBody">
+            <h2>Créer avec l’IA</h2>
+            <p>Réponds à quelques questions et laisse NDL préparer ta base.</p>
+          </div>
+          <div class="miniPhone">
+            <div class="mpBar"><span class="mpBrand">NDL•</span><span class="mpMenu"><i></i><i></i><i></i></span></div>
+            <div class="mpSpark">✦ ✦ ✦</div>
+            <div class="mpLine" style="margin-top:20px"></div><div class="mpLine w60"></div>
+          </div>
+          <span class="radioDot"></span>
+        </label>
+      </div>
+
+      <div class="formatBlock">
+        <div class="formatLabel">Format du site
+          <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 8v.1"/></svg>
+        </div>
+        <div class="formatToggle" id="formatToggle">
+          <button class="fmtBtn active" data-fmt="miniapp" type="button">
+            <svg class="ico" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 19h2"/></svg>
+            Mini-app
+          </button>
+          <button class="fmtBtn" data-fmt="onepage" type="button">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v3h3"/></svg>
+            One Page
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <div class="obCtaBar">
+      <button class="obContinue" id="continueBtn" type="button">CONTINUER
+        <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===== VIEW 2 : ÉDITEUR ===== -->
+  <section class="view" id="viewEditor">
+    <header class="edTop">
+      <button class="circleBtn" aria-label="Retour" id="backToOnboarding">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M15 19 8 12l7-7"/></svg>
+      </button>
+      <div class="edSiteGroup">
+        <button class="edSiteName" type="button">MON SITE <svg class="ico" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+        <span class="edDraftTag">BROUILLON</span>
+      </div>
+      <span class="edSavedPill"><i class="dotGreen"></i>Enregistré</span>
+      <button class="circleBtn eyeBtn" aria-label="Aperçu">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      <button class="edPublish" type="button">
+        <span class="pubIcon"><svg class="ico" viewBox="0 0 24 24" style="stroke:#fff"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+        Publier
+      </button>
+    </header>
+
+    <div class="edStage">
+      <div class="phoneFrame">
+        <div class="phoneScreen">
+          <div class="siteStatusBar"><span>9:41</span>
+            <svg class="ico" viewBox="0 0 24 24" width="16" height="16"><path d="M2 18h2v-4H2zM7 18h2v-8H7zM12 18h2v-11h-2zM17 18h2v-15h-2z"/></svg>
+          </div>
+          <div class="siteHeader">
+            <b>NDL<i></i><small>STUDIO D’ONGLERIE</small></b>
+            <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </div>
+          <div class="siteScroll" id="siteScroll">
+            <section class="siteSection selected" data-sec="hero">
+              <span class="secTag">Hero</span>
+              <button class="secMenu">⋯</button>
+              <div class="heroPh"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m4 17 5-5 4 4 3-3 4 4" /><circle cx="8" cy="9" r="1.4"/></svg></div>
+              <h3>Un regard unique<br>sur votre beauté</h3>
+              <div class="lineBar"></div><div class="lineBar short"></div>
+              <button class="heroBtnPh" type="button">Ajouter un bouton</button>
+            </section>
+            <button class="addBetween" type="button" aria-label="Ajouter une section" data-open-add>+</button>
+
+            <section class="siteSection" data-sec="prestations">
+              <div class="secHead">Prestations<button class="secMenu">⋯</button></div>
+              <div class="tileRow"><i></i><i></i><i></i></div>
+            </section>
+            <button class="addBetween" type="button" aria-label="Ajouter une section" data-open-add>+</button>
+
+            <section class="siteSection" data-sec="portfolio">
+              <div class="secHead">Portfolio<button class="secMenu">⋯</button></div>
+              <div class="tileRow"><i></i><i></i><i></i></div>
+            </section>
+            <button class="addBetween" type="button" aria-label="Ajouter une section" data-open-add>+</button>
+
+            <section class="siteSection" data-sec="avis">
+              <div class="secHead">Avis clientes<button class="secMenu">⋯</button></div>
+              <div class="tileRow"><i></i><i></i><i></i></div>
+            </section>
+            <button class="addBetween" type="button" aria-label="Ajouter une section" data-open-add>+</button>
+
+            <section class="siteSection" data-sec="contact">
+              <div class="secHead">Contact<button class="secMenu">⋯</button></div>
+              <div class="tileRow"><i></i><i></i><i></i></div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="structureSheet">
+      <div class="grab"></div>
+      <div class="sheetHead">
+        <div><h2>Structure du site</h2><p>Maintiens pour réorganiser</p></div>
+        <button class="addSectionBtn" type="button" data-open-add>+ Ajouter</button>
+      </div>
+      <div class="structList" id="structList">
+        <div class="structRow selected" data-sec="hero"><span class="handle">⠿⠿⠿</span><span class="rowThumb"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M6 16h12"/></svg></span><b>Hero</b><button class="rowEye"><svg class="ico" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="rowMore">⋯</button></div>
+        <div class="structRow" data-sec="prestations"><span class="handle">⠿⠿⠿</span><span class="rowThumb grid3"><i></i><i></i><i></i></span><b>Prestations</b><button class="rowEye"><svg class="ico" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="rowMore">⋯</button></div>
+        <div class="structRow" data-sec="portfolio"><span class="handle">⠿⠿⠿</span><span class="rowThumb grid3"><i></i><i></i><i></i></span><b>Portfolio</b><button class="rowEye"><svg class="ico" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="rowMore">⋯</button></div>
+        <div class="structRow" data-sec="avis"><span class="handle">⠿⠿⠿</span><span class="rowThumb"><svg class="ico" viewBox="0 0 24 24"><path d="M7 8h10M7 12h6M4 4h16v13H9l-5 4z"/></svg></span><b>Avis clientes</b><button class="rowEye"><svg class="ico" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="rowMore">⋯</button></div>
+        <div class="structRow" data-sec="contact"><span class="handle">⠿⠿⠿</span><span class="rowThumb"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="m4 6 8 7 8-7"/></svg></span><b>Contact</b><button class="rowEye"><svg class="ico" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="rowMore">⋯</button></div>
+      </div>
+    </div>
+
+    <nav class="bottomNav" id="bottomNav">
+      <button class="navItem active" data-tab="structure"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>Structure</button>
+      <button class="navItem" data-tab="contenu"><svg class="ico" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 12h6M9 16h6"/></svg>Contenu</button>
+      <button class="navItem" data-tab="design"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.3"/><circle cx="14" cy="9" r="1.3"/><circle cx="15" cy="14" r="1.3"/><path d="M12 3a9 9 0 0 0 0 18c1.4 0 2-1 2-2s-.5-1.3-.5-2.2c0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4c0-5-4-8-9-8Z"/></svg>Design</button>
+      <button class="navItem" data-tab="reserver"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Réserver</button>
+      <button class="navItem" data-tab="reglages"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1c.6.5 1.3.9 2 1.2L10 21h4l.5-2.6c.7-.3 1.4-.7 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z"/></svg>Réglages</button>
+    </nav>
+  </section>
+
+  <!-- ===== SHEET : AJOUTER UNE SECTION ===== -->
+  <div class="scrim" id="scrim"></div>
+  <div class="addSectionSheet" id="addSectionSheet">
+    <div class="grab"></div>
+    <div class="asHead">
+      <div><span class="asEyebrow">CONSTRUIRE</span><h2>Ajouter une section</h2></div>
+      <button class="asClose" id="closeAddSection" aria-label="Fermer">✕</button>
+    </div>
+    <div class="asSearch">
+      <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input placeholder="Rechercher une section">
+    </div>
+    <div class="asCats" id="asCats">
+      <button class="active" type="button" data-cat="essentiels">Essentiels</button>
+      <button type="button" data-cat="contenu">Contenu</button>
+      <button type="button" data-cat="confiance">Confiance</button>
+      <button type="button" data-cat="conversion">Conversion</button>
+    </div>
+    <div class="asGrid" id="asGrid">
+      <button class="asCard selected" data-sec="hero">
+        <div class="asThumb tHero"><span class="cap">Believe in<br><b>your nail era</b></span></div>
+        <b>Hero</b><span>8 styles</span>
+      </button>
+      <button class="asCard" data-sec="prestations">
+        <div class="asThumb tPrestations">Nos prestations</div>
+        <b>Prestations</b><span>6 styles</span>
+      </button>
+      <button class="asCard" data-sec="portfolio">
+        <div class="asThumb tPortfolio"></div>
+        <b>Portfolio</b><span>7 styles</span>
+      </button>
+      <button class="asCard" data-sec="avis">
+        <div class="asThumb tAvis"><span class="stars">★★★★★</span><small>“Toujours un résultat<br>parfait !”</small></div>
+        <b>Avis clientes</b><span>4 styles</span>
+      </button>
+      <button class="asCard" data-sec="apropos">
+        <div class="asThumb tApropos"><p>Plus qu’une pose,<br>une signature.</p></div>
+        <b>À propos</b><span>5 styles</span>
+      </button>
+      <button class="asCard" data-sec="regles">
+        <div class="asThumb tRegles"><i>🌿</i><i>♥</i><i>◆</i></div>
+        <b>Règles</b><span>4 styles</span>
+      </button>
+      <button class="asCard" data-sec="fidelite">
+        <div class="asThumb tFidelite"><div class="stampRow"><i></i><i></i><i></i><i></i><i></i></div><small>Fidélité récompensée</small></div>
+        <b>Fidélité</b><span>3 styles</span>
+      </button>
+      <button class="asCard" data-sec="contact">
+        <div class="asThumb tContact"><b>Discutons !</b></div>
+        <b>Contact</b><span>4 styles</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- view switch ----
+const viewOnboarding=document.getElementById('viewOnboarding');
+const viewEditor=document.getElementById('viewEditor');
+document.getElementById('continueBtn').onclick=()=>{
+  viewOnboarding.classList.remove('active');
+  viewEditor.classList.add('active');
+  window.scrollTo(0,0);
+};
+document.getElementById('backToOnboarding').onclick=()=>{
+  viewEditor.classList.remove('active');
+  viewOnboarding.classList.add('active');
+};
+
+// ---- onboarding: start choice ----
+document.querySelectorAll('#startChoices .obCard:not(.disabled)').forEach(card=>{
+  card.addEventListener('click',()=>{
+    document.querySelectorAll('#startChoices .obCard').forEach(c=>c.classList.remove('selected'));
+    card.classList.add('selected');
+    card.querySelector('input').checked=true;
+  });
+});
+
+// ---- onboarding: format toggle ----
+document.querySelectorAll('#formatToggle .fmtBtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#formatToggle .fmtBtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// ---- editor: select a section (both on canvas + in structure list) ----
+function selectSection(id){
+  document.querySelectorAll('.siteSection').forEach(s=>s.classList.toggle('selected',s.dataset.sec===id));
+  document.querySelectorAll('.structRow').forEach(r=>r.classList.toggle('selected',r.dataset.sec===id));
+}
+document.querySelectorAll('.siteSection').forEach(s=>s.addEventListener('click',e=>{
+  if(e.target.closest('[data-open-add]'))return;
+  selectSection(s.dataset.sec);
+}));
+document.querySelectorAll('.structRow').forEach(r=>r.addEventListener('click',()=>selectSection(r.dataset.sec)));
+
+// ---- bottom nav ----
+document.querySelectorAll('.navItem').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.navItem').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// ---- add-section sheet ----
+const scrim=document.getElementById('scrim');
+const addSheet=document.getElementById('addSectionSheet');
+function openAdd(){scrim.classList.add('show');addSheet.classList.add('show');}
+function closeAdd(){scrim.classList.remove('show');addSheet.classList.remove('show');}
+document.querySelectorAll('[data-open-add]').forEach(b=>b.addEventListener('click',openAdd));
+document.getElementById('closeAddSection').onclick=closeAdd;
+scrim.addEventListener('click',closeAdd);
+
+document.querySelectorAll('#asCats button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#asCats button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+document.querySelectorAll('.asCard').forEach(card=>{
+  card.addEventListener('click',()=>{
+    document.querySelectorAll('.asCard').forEach(c=>c.classList.remove('selected'));
+    card.classList.add('selected');
+  });
+});
+</script>
+</body>
+</html>
